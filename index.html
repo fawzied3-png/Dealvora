@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AffiliateHub — Multi-Platform Publisher</title>
+    <title>AffiliateHub — Saudi Arabia Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -81,11 +81,71 @@
         .copy-tooltip { position: relative; }
         .copy-tooltip::after { content: 'Copied!'; position: absolute; top: -30px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
         .copy-tooltip.show::after { opacity: 1; }
+
+        .btn-primary { background: linear-gradient(135deg, #f97316, #ea580c); color: white; padding: 12px 24px; border-radius: 12px; font-weight: 600; border: none; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(249, 115, 22, 0.4); }
+        .btn-primary:active { transform: translateY(0); }
+
+        .btn-secondary { background: #334155; color: white; padding: 12px 24px; border-radius: 12px; font-weight: 600; border: none; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-secondary:hover { background: #475569; }
+
+        .btn-outline { background: transparent; color: #e2e8f0; padding: 12px 24px; border-radius: 12px; font-weight: 600; border: 1px solid #475569; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-outline:hover { background: rgba(255,255,255,0.05); border-color: #f97316; }
+
+        .login-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); z-index: 100; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .login-box { background: #1e293b; border: 1px solid #334155; border-radius: 24px; padding: 40px; width: 100%; max-width: 420px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        
+        .admin-badge { background: linear-gradient(135deg, #f59e0b, #d97706); color: #0f172a; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        
+        .hidden { display: none !important; }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased min-h-screen">
 
-    <!-- Sidebar -->
+    <!-- LOGIN OVERLAY -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-box">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-rose-500 flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <i class="fas fa-lock text-white text-2xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-2">Admin Access</h2>
+                <p class="text-slate-400 text-sm">Enter your credentials to manage products</p>
+            </div>
+            
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2 text-slate-300">Username</label>
+                        <input type="text" id="loginUsername" required placeholder="admin"
+                            class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all text-white placeholder-slate-600">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2 text-slate-300">Password</label>
+                        <div class="relative">
+                            <input type="password" id="loginPassword" required placeholder="••••••"
+                                class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all text-white placeholder-slate-600">
+                            <button type="button" onclick="togglePassword()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                                <i class="fas fa-eye" id="eyeIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="loginError" class="text-rose-400 text-sm hidden">
+                        <i class="fas fa-exclamation-circle mr-1"></i> Invalid credentials
+                    </div>
+                    <button type="submit" class="btn-primary w-full justify-center text-base">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </button>
+                </div>
+            </form>
+            
+            <div class="mt-6 text-center">
+                <p class="text-xs text-slate-500">Default: admin / admin123</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIDEBAR -->
     <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-slate-900 border-r border-slate-800 z-40 transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
         <div class="p-6 border-b border-slate-800">
             <div class="flex items-center gap-3">
@@ -94,7 +154,7 @@
                 </div>
                 <div>
                     <h1 class="font-bold text-lg tracking-tight">Affiliate<span class="text-orange-500">Hub</span></h1>
-                    <p class="text-xs text-slate-500">Multi-Platform Publisher</p>
+                    <p class="text-xs text-slate-500">السعودية 🇸🇦</p>
                 </div>
             </div>
         </div>
@@ -106,7 +166,7 @@
             <button onclick="switchView('products')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all hover:bg-slate-800 text-slate-300 hover:text-white" data-view="products">
                 <i class="fas fa-box w-5"></i> My Products
             </button>
-            <button onclick="switchView('publish')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all hover:bg-slate-800 text-slate-300 hover:text-white" data-view="publish">
+            <button onclick="goToPublish()" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all hover:bg-slate-800 text-slate-300 hover:text-white" data-view="publish">
                 <i class="fas fa-plus-circle w-5"></i> Publish New
             </button>
             <button onclick="switchView('social')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all hover:bg-slate-800 text-slate-300 hover:text-white" data-view="social">
@@ -123,22 +183,26 @@
         <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-800">
             <div class="glass rounded-xl p-4">
                 <div class="flex items-center gap-3 mb-3">
-                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" class="w-10 h-10 rounded-full object-cover border-2 border-orange-500">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-rose-500 flex items-center justify-center text-white font-bold text-sm" id="userAvatar">
+                        A
+                    </div>
                     <div>
-                        <p class="text-sm font-semibold">Admin User</p>
-                        <p class="text-xs text-slate-500">Pro Plan</p>
+                        <p class="text-sm font-semibold" id="userName">Admin</p>
+                        <div class="flex items-center gap-2">
+                            <span class="admin-badge">Admin</span>
+                        </div>
                     </div>
                 </div>
-                <div class="w-full bg-slate-800 rounded-full h-2 mb-2">
-                    <div class="bg-gradient-to-r from-orange-500 to-rose-500 h-2 rounded-full" style="width: 78%"></div>
-                </div>
-                <p class="text-xs text-slate-500">78% storage used</p>
+                <button onclick="logout()" class="w-full text-left px-3 py-2 rounded-lg text-sm text-rose-400 hover:bg-rose-500/10 transition-colors">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                </button>
             </div>
         </div>
     </aside>
 
     <div id="mobileOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden"></div>
 
+    <!-- MAIN CONTENT -->
     <main class="lg:ml-64 min-h-screen transition-all">
         <header class="sticky top-0 z-20 glass border-b border-slate-800 px-6 py-4 flex items-center justify-between">
             <div class="flex items-center gap-4">
@@ -163,9 +227,14 @@
             
             <!-- DASHBOARD -->
             <div id="view-dashboard" class="view-section">
-                <div class="mb-8">
-                    <h2 class="text-3xl font-bold mb-2">Dashboard</h2>
-                    <p class="text-slate-400">Overview of all your affiliate platforms</p>
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h2 class="text-3xl font-bold mb-2">Dashboard</h2>
+                        <p class="text-slate-400">Overview of all your affiliate platforms</p>
+                    </div>
+                    <button onclick="goToPublish()" class="btn-primary">
+                        <i class="fas fa-plus"></i> Publish New
+                    </button>
                 </div>
 
                 <div class="mb-10">
@@ -202,14 +271,14 @@
                                             </div>
                                             <div class="glass rounded-xl p-4 border border-slate-700/50">
                                                 <p class="text-slate-400 text-xs mb-1">Est. Monthly</p>
-                                                <p class="text-2xl font-bold text-orange-400">$0.00</p>
+                                                <p class="text-2xl font-bold text-orange-400">ر.س 0.00</p>
                                             </div>
                                             <div class="glass rounded-xl p-4 border border-slate-700/50">
                                                 <p class="text-slate-400 text-xs mb-1">Clicks</p>
                                                 <p class="text-2xl font-bold">0</p>
                                             </div>
                                         </div>
-                                        <button onclick="switchView('publish'); selectPlatform('amazon')" class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-lg font-medium transition-all text-sm">
+                                        <button onclick="goToPublish()" class="btn-primary text-sm">
                                             <i class="fas fa-plus mr-2"></i>Add Product
                                         </button>
                                     </div>
@@ -226,1114 +295,4 @@
                                             </div>
                                             <div>
                                                 <h3 class="text-2xl font-bold">Alibaba Affiliates</h3>
-                                                <p class="text-slate-400">3-15% Commission • 15d Cookie</p>
-                                            </div>
-                                            <span class="ml-auto px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-bold border border-green-500/30">Active</span>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-4 mb-6">
-                                            <div class="glass rounded-xl p-4 border border-slate-700/50">
-                                                <p class="text-slate-400 text-xs mb-1">Products</p>
-                                                <p class="text-2xl font-bold" id="alibaba-count">0</p>
-                                            </div>
-                                            <div class="glass rounded-xl p-4 border border-slate-700/50">
-                                                <p class="text-slate-400 text-xs mb-1">Est. Monthly</p>
-                                                <p class="text-2xl font-bold text-rose-400">$0.00</p>
-                                            </div>
-                                            <div class="glass rounded-xl p-4 border border-slate-700/50">
-                                                <p class="text-slate-400 text-xs mb-1">Clicks</p>
-                                                <p class="text-2xl font-bold">0</p>
-                                            </div>
-                                        </div>
-                                        <button onclick="switchView('publish'); selectPlatform('alibaba')" class="bg-rose-500 hover:bg-rose-600 text-white px-6 py-2.5 rounded-lg font-medium transition-all text-sm">
-                                            <i class="fas fa-plus mr-2"></i>Add Product
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="slide">
-                                <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-8 border border-slate-700 relative overflow-hidden">
-                                    <div class="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
-                                    <div class="relative z-10">
-                                        <div class="flex items-center gap-4 mb-6">
-                                            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg">
-                                                <i class="fas fa-shopping-bag text-white text-2xl"></i>
-                                            </div>
-                                            <div>
-                                                <h3 class="text-2xl font-bold">AliExpress Portals</h3>
-                                                <p class="text-slate-400">Up to 9% Commission • 30d Cookie</p>
-                                            </div>
-                                            <span class="ml-auto px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-bold border border-green-500/30">Active</span>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-4 mb-6">
-                                            <div class="glass rounded-xl p-4 border border-slate-700/50">
-                                                <p class="text-slate-400 text-xs mb-1">Products</p>
-                                                <p class="text-2xl font-bold" id="aliexpress-count">0</p>
-                                            </div>
-                                            <div class="glass rounded-xl p-4 border border-slate-700/50">
-                                                <p class="text-slate-400 text-xs mb-1">Est. Monthly</p>
-                                                <p class="text-2xl font-bold text-amber-400">$0.00</p>
-                                            </div>
-                                            <div class="glass rounded-xl p-4 border border-slate-700/50">
-                                                <p class="text-slate-400 text-xs mb-1">Clicks</p>
-                                                <p class="text-2xl font-bold">0</p>
-                                            </div>
-                                        </div>
-                                        <button onclick="switchView('publish'); selectPlatform('aliexpress')" class="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2.5 rounded-lg font-medium transition-all text-sm">
-                                            <i class="fas fa-plus mr-2"></i>Add Product
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="slide">
-                                <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-8 border border-slate-700 relative overflow-hidden">
-                                    <div class="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
-                                    <div class="relative z-10">
-                                        <div class="flex items-center gap-4 mb-6">
-                                            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg">
-                                                <i class="fas fa-bolt text-white text-2xl"></i>
-                                            </div>
-                                            <div>
-                                                <h3 class="text-2xl font-bold">Temu Affiliates</h3>
-                                                <p class="text-slate-400">10-30% Commission • 30d Cookie</p>
-                                            </div>
-                                            <span class="ml-auto px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-bold border border-green-500/30">Active</span>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-4 mb-6">
-                                            <div class="glass rounded-xl p-4 border border-slate-700/50">
-                                                <p class="text-slate-400 text-xs mb-1">Products</p>
-                                                <p class="text-2xl font-bold" id="temu-count">0</p>
-                                            </div>
-                                            <div class="glass rounded-xl p-4 border border-slate-700/50">
-                                                <p class="text-slate-400 text-xs mb-1">Est. Monthly</p>
-                                                <p class="text-2xl font-bold text-emerald-400">$0.00</p>
-                                            </div>
-                                            <div class="glass rounded-xl p-4 border border-slate-700/50">
-                                                <p class="text-slate-400 text-xs mb-1">Clicks</p>
-                                                <p class="text-2xl font-bold">0</p>
-                                            </div>
-                                        </div>
-                                        <button onclick="switchView('publish'); selectPlatform('temu')" class="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2.5 rounded-lg font-medium transition-all text-sm">
-                                            <i class="fas fa-plus mr-2"></i>Add Product
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="flex justify-between mt-4">
-                        <button onclick="prevSlide()" class="p-2 hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-white">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <button onclick="nextSlide()" class="p-2 hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-white">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="grid md:grid-cols-4 gap-4 mb-8">
-                    <div class="glass rounded-xl p-5 border border-slate-700/50">
-                        <div class="flex items-center justify-between mb-2">
-                            <p class="text-slate-400 text-sm">Total Products</p>
-                            <i class="fas fa-box text-slate-600"></i>
-                        </div>
-                        <p class="text-2xl font-bold" id="total-products">0</p>
-                    </div>
-                    <div class="glass rounded-xl p-5 border border-slate-700/50">
-                        <div class="flex items-center justify-between mb-2">
-                            <p class="text-slate-400 text-sm">Social Shares</p>
-                            <i class="fas fa-share-alt text-slate-600"></i>
-                        </div>
-                        <p class="text-2xl font-bold" id="total-shares">0</p>
-                    </div>
-                    <div class="glass rounded-xl p-5 border border-slate-700/50">
-                        <div class="flex items-center justify-between mb-2">
-                            <p class="text-slate-400 text-sm">Conversions</p>
-                            <i class="fas fa-shopping-cart text-slate-600"></i>
-                        </div>
-                        <p class="text-2xl font-bold">0</p>
-                    </div>
-                    <div class="glass rounded-xl p-5 border border-slate-700/50">
-                        <div class="flex items-center justify-between mb-2">
-                            <p class="text-slate-400 text-sm">Est. Revenue</p>
-                            <i class="fas fa-dollar-sign text-slate-600"></i>
-                        </div>
-                        <p class="text-2xl font-bold text-orange-400">$0.00</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- PRODUCTS VIEW -->
-            <div id="view-products" class="view-section hidden">
-                <div class="flex items-center justify-between mb-8">
-                    <div>
-                        <h2 class="text-3xl font-bold mb-2">My Products</h2>
-                        <p class="text-slate-400">Manage all your affiliate listings</p>
-                    </div>
-                    <button onclick="switchView('publish')" class="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2.5 rounded-lg font-medium transition-all text-sm flex items-center gap-2">
-                        <i class="fas fa-plus"></i> New Product
-                    </button>
-                </div>
-
-                <div class="flex gap-1 mb-6 bg-slate-800/50 p-1 rounded-xl inline-flex">
-                    <button onclick="filterProducts('all')" class="platform-tab active px-5 py-2 rounded-lg text-sm font-medium transition-all" data-platform="all">All</button>
-                    <button onclick="filterProducts('amazon')" class="platform-tab px-5 py-2 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-white" data-platform="amazon">
-                        <i class="fab fa-amazon mr-1"></i>Amazon
-                    </button>
-                    <button onclick="filterProducts('alibaba')" class="platform-tab px-5 py-2 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-white" data-platform="alibaba">
-                        <i class="fas fa-building mr-1"></i>Alibaba
-                    </button>
-                    <button onclick="filterProducts('aliexpress')" class="platform-tab px-5 py-2 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-white" data-platform="aliexpress">
-                        <i class="fas fa-shopping-bag mr-1"></i>AliExpress
-                    </button>
-                    <button onclick="filterProducts('temu')" class="platform-tab px-5 py-2 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-white" data-platform="temu">
-                        <i class="fas fa-bolt mr-1"></i>Temu
-                    </button>
-                </div>
-
-                <div class="flex gap-3 mb-6">
-                    <div class="relative flex-1">
-                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"></i>
-                        <input type="text" id="productSearch" onkeyup="searchProducts()" placeholder="Search your products..." 
-                            class="w-full bg-slate-800/50 border border-slate-700 rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-orange-500 transition-colors placeholder-slate-500">
-                    </div>
-                    <select id="sortProducts" onchange="sortProducts()" class="bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-orange-500 text-slate-300">
-                        <option value="newest">Newest First</option>
-                        <option value="price-high">Price: High to Low</option>
-                        <option value="price-low">Price: Low to High</option>
-                        <option value="commission">Commission</option>
-                    </select>
-                </div>
-
-                <div id="productsGrid" class="product-grid"></div>
-
-                <div id="emptyState" class="empty-state hidden">
-                    <i class="fas fa-box-open"></i>
-                    <h3 class="text-xl font-semibold mb-2">No products yet</h3>
-                    <p class="text-slate-500 mb-4">Start by publishing your first affiliate product</p>
-                    <button onclick="switchView('publish')" class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-lg font-medium transition-all">
-                        Publish Product
-                    </button>
-                </div>
-            </div>
-
-            <!-- PUBLISH VIEW -->
-            <div id="view-publish" class="view-section hidden">
-                <div class="mb-8">
-                    <h2 class="text-3xl font-bold mb-2">Publish Product</h2>
-                    <p class="text-slate-400">Add a new affiliate product to your catalog</p>
-                </div>
-
-                <div class="grid lg:grid-cols-3 gap-8">
-                    <div class="lg:col-span-2 space-y-6">
-                        <!-- Platform Selector -->
-                        <div class="glass rounded-2xl p-6 border border-slate-700/50">
-                            <label class="block text-sm font-medium mb-4">Select Platform</label>
-                            <div class="grid grid-cols-4 gap-3">
-                                <button type="button" onclick="selectPlatform('amazon')" class="platform-select p-4 rounded-xl border border-slate-700 hover:border-orange-500 transition-all text-center group" data-platform="amazon">
-                                    <div class="w-12 h-12 mx-auto mb-2 rounded-xl bg-slate-800 flex items-center justify-center group-hover:bg-orange-500/20 transition-colors">
-                                        <i class="fab fa-amazon text-orange-400 text-xl"></i>
-                                    </div>
-                                    <p class="text-sm font-medium">Amazon</p>
-                                    <p class="text-xs text-slate-500">1-10%</p>
-                                </button>
-                                <button type="button" onclick="selectPlatform('alibaba')" class="platform-select p-4 rounded-xl border border-slate-700 hover:border-rose-500 transition-all text-center group" data-platform="alibaba">
-                                    <div class="w-12 h-12 mx-auto mb-2 rounded-xl bg-slate-800 flex items-center justify-center group-hover:bg-rose-500/20 transition-colors">
-                                        <i class="fas fa-building text-rose-400 text-xl"></i>
-                                    </div>
-                                    <p class="text-sm font-medium">Alibaba</p>
-                                    <p class="text-xs text-slate-500">3-15%</p>
-                                </button>
-                                <button type="button" onclick="selectPlatform('aliexpress')" class="platform-select p-4 rounded-xl border border-slate-700 hover:border-amber-500 transition-all text-center group" data-platform="aliexpress">
-                                    <div class="w-12 h-12 mx-auto mb-2 rounded-xl bg-slate-800 flex items-center justify-center group-hover:bg-amber-500/20 transition-colors">
-                                        <i class="fas fa-shopping-bag text-amber-400 text-xl"></i>
-                                    </div>
-                                    <p class="text-sm font-medium">AliExpress</p>
-                                    <p class="text-xs text-slate-500">Up to 9%</p>
-                                </button>
-                                <button type="button" onclick="selectPlatform('temu')" class="platform-select p-4 rounded-xl border border-slate-700 hover:border-emerald-500 transition-all text-center group" data-platform="temu">
-                                    <div class="w-12 h-12 mx-auto mb-2 rounded-xl bg-slate-800 flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors">
-                                        <i class="fas fa-bolt text-emerald-400 text-xl"></i>
-                                    </div>
-                                    <p class="text-sm font-medium">Temu</p>
-                                    <p class="text-xs text-slate-500">10-30%</p>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- THE FORM - Fixed -->
-                        <form id="publishForm" onsubmit="handlePublish(event)" class="space-y-6">
-                            <div class="glass rounded-2xl p-6 border border-slate-700/50">
-                                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
-                                    <i class="fas fa-info-circle text-orange-500"></i> Product Details
-                                </h3>
-                                <div class="space-y-4">
-                                    <div>
-                                        <label class="block text-sm font-medium mb-2 text-slate-300">Product Name *</label>
-                                        <input type="text" name="name" id="inputName" required placeholder="e.g., Sony WH-1000XM5 Wireless Headphones"
-                                            class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors placeholder-slate-600 text-white">
-                                    </div>
-                                    
-                                    <div class="grid md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block text-sm font-medium mb-2 text-slate-300">Price ($) *</label>
-                                            <input type="number" name="price" id="inputPrice" required step="0.01" min="0" placeholder="199.99"
-                                                class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors placeholder-slate-600 text-white">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium mb-2 text-slate-300">Sale Price ($) <span class="text-slate-500 text-xs">(optional)</span></label>
-                                            <input type="number" name="salePrice" id="inputSalePrice" step="0.01" min="0" placeholder="149.99"
-                                                class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors placeholder-slate-600 text-white">
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="grid md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block text-sm font-medium mb-2 text-slate-300">Commission Rate (%) *</label>
-                                            <input type="number" name="commission" id="inputCommission" required step="0.1" min="0" max="100" placeholder="4.5"
-                                                class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors placeholder-slate-600 text-white">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium mb-2 text-slate-300">Category</label>
-                                            <select name="category" id="inputCategory" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-orange-500 text-slate-300">
-                                                <option value="electronics">Electronics</option>
-                                                <option value="fashion">Fashion</option>
-                                                <option value="home">Home & Kitchen</option>
-                                                <option value="beauty">Beauty & Health</option>
-                                                <option value="sports">Sports & Outdoors</option>
-                                                <option value="toys">Toys & Games</option>
-                                                <option value="books">Books & Media</option>
-                                                <option value="automotive">Automotive</option>
-                                                <option value="other">Other</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    
-                                    <div>
-                                        <label class="block text-sm font-medium mb-2 text-slate-300">Affiliate Link *</label>
-                                        <input type="url" name="affiliateLink" id="inputLink" required placeholder="https://affiliate-link.com/..."
-                                            class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors placeholder-slate-600 text-white">
-                                    </div>
-                                    
-                                    <div>
-                                        <label class="block text-sm font-medium mb-2 text-slate-300">Description</label>
-                                        <textarea name="description" id="inputDescription" rows="3" placeholder="Brief product description..."
-                                            class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors placeholder-slate-600 text-white resize-none"></textarea>
-                                    </div>
-                                    
-                                    <div>
-                                        <label class="block text-sm font-medium mb-2 text-slate-300">Tags</label>
-                                        <div class="tag-input" id="tagInput">
-                                            <input type="text" id="tagInputField" placeholder="Type and press Enter..." onkeydown="handleTagInput(event)">
-                                        </div>
-                                        <p class="text-xs text-slate-500 mt-1">Press Enter to add tags</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="glass rounded-2xl p-6 border border-slate-700/50">
-                                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
-                                    <i class="fas fa-image text-orange-500"></i> Product Images
-                                </h3>
-                                <div class="grid grid-cols-3 gap-3 mb-3" id="imagePreviewGrid"></div>
-                                <div class="border-2 border-dashed border-slate-700 rounded-xl p-8 text-center hover:border-orange-500/50 transition-colors cursor-pointer" onclick="document.getElementById('imageUpload').click()">
-                                    <i class="fas fa-cloud-upload-alt text-3xl text-slate-600 mb-3"></i>
-                                    <p class="text-sm font-medium text-slate-400">Click to upload images</p>
-                                    <p class="text-xs text-slate-600 mt-1">PNG, JPG up to 5MB</p>
-                                    <input type="file" id="imageUpload" multiple accept="image/*" class="hidden" onchange="handleImageUpload(event)">
-                                </div>
-                            </div>
-
-                            <!-- Submit Buttons -->
-                            <div class="flex gap-3">
-                                <button type="submit" id="publishBtn" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-semibold transition-all transform hover:scale-[1.02] shadow-lg shadow-orange-500/20">
-                                    <i class="fas fa-paper-plane mr-2"></i>Publish Product
-                                </button>
-                                <button type="button" onclick="resetForm()" class="px-6 py-3 rounded-xl border border-slate-700 hover:bg-slate-800 text-slate-400 hover:text-white transition-all font-medium">
-                                    Reset
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- Live Preview -->
-                    <div class="lg:col-span-1">
-                        <div class="sticky top-24">
-                            <h3 class="text-sm font-semibold text-slate-400 mb-4 uppercase tracking-wider">Live Preview</h3>
-                            <div class="glass rounded-2xl border border-slate-700/50 overflow-hidden">
-                                <div class="relative h-48 bg-slate-800 flex items-center justify-center" id="previewImageContainer">
-                                    <i class="fas fa-image text-4xl text-slate-700"></i>
-                                </div>
-                                <div class="p-5">
-                                    <div class="flex items-center gap-2 mb-2">
-                                        <span id="previewPlatform" class="commission-badge amazon text-white px-2 py-0.5 rounded text-xs font-bold">Amazon</span>
-                                        <span id="previewCategory" class="bg-slate-700 text-slate-300 px-2 py-0.5 rounded text-xs">Electronics</span>
-                                    </div>
-                                    <h4 id="previewName" class="font-bold text-lg mb-2 truncate-2">Product Name</h4>
-                                    <div class="flex items-end gap-2 mb-3">
-                                        <span id="previewPrice" class="text-2xl font-bold text-orange-400">$0.00</span>
-                                        <span id="previewOriginalPrice" class="text-sm text-slate-500 line-through hidden">$0.00</span>
-                                    </div>
-                                    <div class="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg mb-3">
-                                        <span class="text-xs text-slate-400">Your Commission</span>
-                                        <span id="previewCommission" class="text-sm font-bold text-green-400">$0.00</span>
-                                    </div>
-                                    <button class="w-full bg-slate-700 hover:bg-slate-600 text-white py-2.5 rounded-lg font-medium text-sm transition-all">
-                                        View on <span id="previewPlatformBtn">Amazon</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SOCIAL HUB -->
-            <div id="view-social" class="view-section hidden">
-                <div class="mb-8">
-                    <h2 class="text-3xl font-bold mb-2">Social Hub</h2>
-                    <p class="text-slate-400">Share products and generate captions</p>
-                </div>
-
-                <div class="grid lg:grid-cols-3 gap-8">
-                    <div class="lg:col-span-2 space-y-6">
-                        <div class="glass rounded-2xl p-6 border border-slate-700/50">
-                            <h3 class="text-lg font-semibold mb-4">Select Product to Share</h3>
-                            <div id="socialProductSelector" class="space-y-3 max-h-64 overflow-y-auto pr-2"></div>
-                            <div id="noProductsSocial" class="text-center py-8 hidden">
-                                <i class="fas fa-box-open text-3xl text-slate-600 mb-3"></i>
-                                <p class="text-slate-500 text-sm">No products to share. Publish a product first.</p>
-                            </div>
-                        </div>
-
-                        <div id="shareSection" class="hidden space-y-6">
-                            <div class="glass rounded-2xl p-6 border border-slate-700/50">
-                                <h3 class="text-lg font-semibold mb-4">Generated Caption</h3>
-                                <textarea id="generatedCaption" rows="4" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-orange-500 text-white resize-none mb-3"></textarea>
-                                <div class="flex justify-between">
-                                    <span id="charCount" class="text-xs text-slate-500">0 chars</span>
-                                    <button onclick="copyCaption()" class="text-xs text-orange-400 hover:text-orange-300 font-medium">
-                                        <i class="fas fa-copy mr-1"></i>Copy
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="glass rounded-2xl p-6 border border-slate-700/50">
-                                <h3 class="text-lg font-semibold mb-4">Share To</h3>
-                                <div class="grid grid-cols-3 md:grid-cols-5 gap-3">
-                                    <button onclick="shareTo('facebook')" class="social-btn bg-social-facebook text-white p-4 rounded-xl flex flex-col items-center gap-2 hover:opacity-90">
-                                        <i class="fab fa-facebook-f text-xl"></i>
-                                        <span class="text-xs font-medium">Facebook</span>
-                                    </button>
-                                    <button onclick="shareTo('twitter')" class="social-btn bg-social-twitter text-white p-4 rounded-xl flex flex-col items-center gap-2 hover:opacity-90">
-                                        <i class="fab fa-twitter text-xl"></i>
-                                        <span class="text-xs font-medium">Twitter</span>
-                                    </button>
-                                    <button onclick="shareTo('pinterest')" class="social-btn bg-social-pinterest text-white p-4 rounded-xl flex flex-col items-center gap-2 hover:opacity-90">
-                                        <i class="fab fa-pinterest-p text-xl"></i>
-                                        <span class="text-xs font-medium">Pinterest</span>
-                                    </button>
-                                    <button onclick="shareTo('linkedin')" class="social-btn bg-social-linkedin text-white p-4 rounded-xl flex flex-col items-center gap-2 hover:opacity-90">
-                                        <i class="fab fa-linkedin-in text-xl"></i>
-                                        <span class="text-xs font-medium">LinkedIn</span>
-                                    </button>
-                                    <button onclick="shareTo('whatsapp')" class="social-btn bg-social-whatsapp text-white p-4 rounded-xl flex flex-col items-center gap-2 hover:opacity-90">
-                                        <i class="fab fa-whatsapp text-xl"></i>
-                                        <span class="text-xs font-medium">WhatsApp</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="lg:col-span-1">
-                        <div class="sticky top-24">
-                            <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Preview</h3>
-                            <div class="bg-white rounded-xl overflow-hidden shadow-lg p-3">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <div class="w-8 h-8 rounded-full bg-gray-200"></div>
-                                    <div>
-                                        <p class="text-xs font-bold text-gray-800">Your Page</p>
-                                        <p class="text-xs text-gray-500">Just now</p>
-                                    </div>
-                                </div>
-                                <p class="text-sm text-gray-800 mb-2" id="fbPreviewText">Your caption will appear here...</p>
-                                <div class="border border-gray-200 rounded-lg overflow-hidden">
-                                    <div class="h-32 bg-gray-100 flex items-center justify-center" id="fbPreviewImage">
-                                        <i class="fas fa-image text-gray-300 text-2xl"></i>
-                                    </div>
-                                    <div class="p-2 bg-gray-50">
-                                        <p class="text-xs font-bold text-gray-700 truncate" id="fbPreviewTitle">Product Title</p>
-                                        <p class="text-xs text-orange-500" id="fbPreviewPrice">$0.00</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ANALYTICS -->
-            <div id="view-analytics" class="view-section hidden">
-                <div class="mb-8">
-                    <h2 class="text-3xl font-bold mb-2">Analytics</h2>
-                    <p class="text-slate-400">Track your performance</p>
-                </div>
-                <div class="glass rounded-2xl p-12 border border-slate-700/50 text-center">
-                    <i class="fas fa-chart-bar text-5xl text-slate-700 mb-4"></i>
-                    <h3 class="text-xl font-semibold mb-2">Analytics Coming Soon</h3>
-                    <p class="text-slate-500">Detailed tracking is in development.</p>
-                </div>
-            </div>
-
-            <!-- SETTINGS -->
-            <div id="view-settings" class="view-section hidden">
-                <div class="mb-8">
-                    <h2 class="text-3xl font-bold mb-2">Settings</h2>
-                    <p class="text-slate-400">Manage your accounts</p>
-                </div>
-                <div class="space-y-6 max-w-2xl">
-                    <div class="glass rounded-2xl p-6 border border-slate-700/50">
-                        <h3 class="text-lg font-semibold mb-4">Affiliate IDs</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium mb-2 text-slate-300">Amazon Associates ID</label>
-                                <input type="text" placeholder="yourstore-20" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-orange-500 text-white">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-2 text-slate-300">Alibaba Affiliate ID</label>
-                                <input type="text" placeholder="A-123456" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-rose-500 text-white">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-2 text-slate-300">AliExpress Publisher ID</label>
-                                <input type="text" placeholder="AE-789012" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-amber-500 text-white">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-2 text-slate-300">Temu Affiliate Code</label>
-                                <input type="text" placeholder="T-345678" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 text-white">
-                            </div>
-                        </div>
-                        <button onclick="showToast('Settings saved!')" class="mt-6 bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl font-semibold transition-all">
-                            Save Settings
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Product Detail Modal -->
-    <div id="productModal" class="fixed inset-0 z-50 hidden">
-        <div class="modal-overlay absolute inset-0" onclick="closeModal()"></div>
-        <div class="absolute inset-4 md:inset-10 lg:inset-20 bg-slate-900 rounded-2xl border border-slate-700 shadow-2xl overflow-hidden flex flex-col">
-            <div class="flex items-center justify-between p-6 border-b border-slate-800">
-                <h3 class="text-lg font-semibold">Product Details</h3>
-                <button onclick="closeModal()" class="p-2 hover:bg-slate-800 rounded-lg transition-colors">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="flex-1 overflow-auto p-6" id="modalContent"></div>
-        </div>
-    </div>
-
-    <!-- Toast -->
-    <div id="toast" class="fixed bottom-6 right-6 bg-slate-800 border border-slate-700 text-white px-6 py-3 rounded-xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-3">
-        <i class="fas fa-check-circle text-green-400"></i>
-        <span id="toastMessage">Action completed</span>
-    </div>
-
-    <script>
-        // ==================== STATE ====================
-        let products = JSON.parse(localStorage.getItem('affiliateProducts')) || [];
-        let currentSlide = 0;
-        let selectedPlatform = 'amazon';
-        let currentTags = [];
-        let uploadedImages = [];
-        let currentFilter = 'all';
-        let selectedProductForSocial = null;
-
-        const platformConfig = {
-            amazon: { color: 'orange', icon: 'fab fa-amazon', name: 'Amazon', commissionRange: '1-10%' },
-            alibaba: { color: 'rose', icon: 'fas fa-building', name: 'Alibaba', commissionRange: '3-15%' },
-            aliexpress: { color: 'amber', icon: 'fas fa-shopping-bag', name: 'AliExpress', commissionRange: 'Up to 9%' },
-            temu: { color: 'emerald', icon: 'fas fa-bolt', name: 'Temu', commissionRange: '10-30%' }
-        };
-
-        // ==================== INIT ====================
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('App initialized. Products:', products.length);
-            updateCounts();
-            renderProducts();
-            setupFormListeners();
-            startAutoSlide();
-            updateSocialSelector();
-            
-            // Set initial active nav
-            document.querySelector('[data-view="dashboard"]').classList.add('active', 'bg-slate-800', 'text-white');
-            document.querySelector('[data-view="dashboard"]').classList.remove('text-slate-300');
-            
-            // Select default platform
-            selectPlatform('amazon');
-        });
-
-        // ==================== VIEW SWITCHING ====================
-        function switchView(viewName) {
-            // Hide all views
-            document.querySelectorAll('.view-section').forEach(v => v.classList.add('hidden'));
-            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('block'));
-            
-            // Show selected view
-            const targetView = document.getElementById(`view-${viewName}`);
-            if (targetView) {
-                targetView.classList.remove('hidden');
-                targetView.classList.add('block');
-            }
-            
-            // Update nav
-            document.querySelectorAll('.nav-item').forEach(n => {
-                n.classList.remove('active', 'bg-slate-800', 'text-white');
-                n.classList.add('text-slate-300');
-            });
-            const activeNav = document.querySelector(`[data-view="${viewName}"]`);
-            if (activeNav) {
-                activeNav.classList.add('active', 'bg-slate-800', 'text-white');
-                activeNav.classList.remove('text-slate-300');
-            }
-            
-            if (viewName === 'products') renderProducts();
-            if (viewName === 'social') updateSocialSelector();
-        }
-
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('mobileOverlay');
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
-        }
-
-        // ==================== SLIDES ====================
-        function goToSlide(index) {
-            currentSlide = index;
-            const track = document.getElementById('slideTrack');
-            if (track) {
-                track.style.transform = `translateX(-${index * 100}%)`;
-            }
-            document.querySelectorAll('.nav-dot').forEach((dot, i) => {
-                dot.classList.toggle('active', i === index);
-            });
-        }
-        function nextSlide() { goToSlide((currentSlide + 1) % 4); }
-        function prevSlide() { goToSlide((currentSlide - 1 + 4) % 4); }
-        function startAutoSlide() {
-            setInterval(() => nextSlide(), 6000);
-        }
-
-        // ==================== PLATFORM SELECTION ====================
-        function selectPlatform(platform) {
-            selectedPlatform = platform;
-            const config = platformConfig[platform];
-            
-            document.querySelectorAll('.platform-select').forEach(el => {
-                const isActive = el.dataset.platform === platform;
-                // Reset classes
-                el.className = 'platform-select p-4 rounded-xl border transition-all text-center group cursor-pointer';
-                
-                if (isActive) {
-                    el.classList.add(`border-${config.color}-500`, `bg-${config.color}-500/10`);
-                } else {
-                    el.classList.add('border-slate-700', 'hover:border-' + config.color + '-500');
-                }
-            });
-
-            // Update preview
-            const previewPlatform = document.getElementById('previewPlatform');
-            if (previewPlatform) {
-                previewPlatform.className = `commission-badge ${platform} text-white px-2 py-0.5 rounded text-xs font-bold`;
-                previewPlatform.textContent = config.name;
-            }
-            const previewBtn = document.getElementById('previewPlatformBtn');
-            if (previewBtn) previewBtn.textContent = config.name;
-        }
-
-        // ==================== TAGS ====================
-        function handleTagInput(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                const val = e.target.value.trim();
-                if (val && !currentTags.includes(val)) {
-                    currentTags.push(val);
-                    renderTags();
-                }
-                e.target.value = '';
-            }
-        }
-        function renderTags() {
-            const container = document.getElementById('tagInput');
-            const input = container.querySelector('input');
-            container.innerHTML = '';
-            currentTags.forEach((tag, i) => {
-                const span = document.createElement('span');
-                span.className = 'tag';
-                span.innerHTML = `${tag} <button type="button" onclick="removeTag(${i})"><i class="fas fa-times"></i></button>`;
-                container.appendChild(span);
-            });
-            container.appendChild(input);
-            input.focus();
-        }
-        function removeTag(index) {
-            currentTags.splice(index, 1);
-            renderTags();
-        }
-
-        // ==================== IMAGE UPLOAD ====================
-        function handleImageUpload(e) {
-            const files = Array.from(e.target.files);
-            files.forEach(file => {
-                if (uploadedImages.length >= 6) return;
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    uploadedImages.push(ev.target.result);
-                    renderImagePreviews();
-                    updatePreviewImage();
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-        function renderImagePreviews() {
-            const grid = document.getElementById('imagePreviewGrid');
-            if (!grid) return;
-            grid.innerHTML = uploadedImages.map((img, i) => `
-                <div class="image-preview aspect-square">
-                    <img src="${img}" class="w-full h-full object-cover">
-                    <button type="button" class="remove" onclick="removeImage(${i})"><i class="fas fa-times"></i></button>
-                </div>
-            `).join('');
-        }
-        function removeImage(index) {
-            uploadedImages.splice(index, 1);
-            renderImagePreviews();
-            updatePreviewImage();
-        }
-        function updatePreviewImage() {
-            const container = document.getElementById('previewImageContainer');
-            if (!container) return;
-            if (uploadedImages.length > 0) {
-                container.innerHTML = `<img src="${uploadedImages[0]}" class="w-full h-full object-cover">`;
-            } else {
-                container.innerHTML = `<i class="fas fa-image text-4xl text-slate-700"></i>`;
-            }
-        }
-
-        // ==================== FORM LISTENERS FOR PREVIEW ====================
-        function setupFormListeners() {
-            const inputs = ['inputName', 'inputPrice', 'inputSalePrice', 'inputCommission', 'inputCategory', 'inputDescription'];
-            inputs.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.addEventListener('input', updatePreview);
-            });
-        }
-
-        function updatePreview() {
-            const name = document.getElementById('inputName')?.value || 'Product Name';
-            const price = parseFloat(document.getElementById('inputPrice')?.value) || 0;
-            const salePrice = parseFloat(document.getElementById('inputSalePrice')?.value) || 0;
-            const commission = parseFloat(document.getElementById('inputCommission')?.value) || 0;
-            const category = document.getElementById('inputCategory')?.value || 'electronics';
-
-            const displayPrice = salePrice || price;
-            const originalPrice = salePrice ? price : null;
-
-            const nameEl = document.getElementById('previewName');
-            const priceEl = document.getElementById('previewPrice');
-            const origEl = document.getElementById('previewOriginalPrice');
-            const commEl = document.getElementById('previewCommission');
-            const catEl = document.getElementById('previewCategory');
-
-            if (nameEl) nameEl.textContent = name;
-            if (priceEl) priceEl.textContent = '$' + displayPrice.toFixed(2);
-            if (origEl) {
-                origEl.classList.toggle('hidden', !originalPrice);
-                if (originalPrice) origEl.textContent = '$' + originalPrice.toFixed(2);
-            }
-            if (commEl) commEl.textContent = '$' + (displayPrice * commission / 100).toFixed(2);
-            if (catEl) catEl.textContent = category.charAt(0).toUpperCase() + category.slice(1);
-        }
-
-        // ==================== PUBLISH PRODUCT - FIXED ====================
-        function handlePublish(e) {
-            e.preventDefault();
-            console.log('Publish button clicked!');
-            
-            // Get form values directly by ID
-            const name = document.getElementById('inputName').value.trim();
-            const price = parseFloat(document.getElementById('inputPrice').value);
-            const salePrice = parseFloat(document.getElementById('inputSalePrice').value) || null;
-            const commission = parseFloat(document.getElementById('inputCommission').value);
-            const category = document.getElementById('inputCategory').value;
-            const affiliateLink = document.getElementById('inputLink').value.trim();
-            const description = document.getElementById('inputDescription').value.trim();
-
-            // Validation
-            if (!name) { showToast('Please enter a product name'); return; }
-            if (!price || price <= 0) { showToast('Please enter a valid price'); return; }
-            if (!commission || commission < 0) { showToast('Please enter a commission rate'); return; }
-            if (!affiliateLink) { showToast('Please enter an affiliate link'); return; }
-
-            // Create product object
-            const product = {
-                id: Date.now().toString(),
-                platform: selectedPlatform,
-                name: name,
-                price: price,
-                salePrice: salePrice,
-                commission: commission,
-                category: category,
-                affiliateLink: affiliateLink,
-                description: description,
-                tags: [...currentTags],
-                images: [...uploadedImages],
-                createdAt: new Date().toISOString(),
-                clicks: 0,
-                conversions: 0
-            };
-
-            console.log('Product created:', product);
-
-            // Save to array and localStorage
-            products.push(product);
-            localStorage.setItem('affiliateProducts', JSON.stringify(products));
-            
-            showToast('Product published successfully!');
-            resetForm();
-            updateCounts();
-            
-            // Switch to products view after short delay
-            setTimeout(() => {
-                switchView('products');
-            }, 800);
-        }
-
-        function resetForm() {
-            document.getElementById('publishForm').reset();
-            currentTags = [];
-            uploadedImages = [];
-            renderTags();
-            renderImagePreviews();
-            updatePreviewImage();
-            updatePreview();
-            selectPlatform('amazon');
-        }
-
-        // ==================== RENDER PRODUCTS ====================
-        function renderProducts() {
-            const grid = document.getElementById('productsGrid');
-            const emptyState = document.getElementById('emptyState');
-            if (!grid) return;
-            
-            let filtered = currentFilter === 'all' ? products : products.filter(p => p.platform === currentFilter);
-            
-            const searchVal = document.getElementById('productSearch')?.value.toLowerCase() || '';
-            if (searchVal) {
-                filtered = filtered.filter(p => 
-                    p.name.toLowerCase().includes(searchVal) || 
-                    p.tags.some(t => t.toLowerCase().includes(searchVal))
-                );
-            }
-
-            if (filtered.length === 0) {
-                grid.innerHTML = '';
-                if (emptyState) emptyState.classList.remove('hidden');
-                return;
-            }
-            
-            if (emptyState) emptyState.classList.add('hidden');
-            
-            grid.innerHTML = filtered.map(product => {
-                const config = platformConfig[product.platform];
-                const displayPrice = product.salePrice || product.price;
-                const originalPrice = product.salePrice ? product.price : null;
-                const commissionAmount = (displayPrice * product.commission / 100).toFixed(2);
-                const hasImage = product.images && product.images.length > 0;
-
-                return `
-                    <div class="glass rounded-2xl border border-slate-700/50 overflow-hidden card-hover group cursor-pointer" onclick="openProductModal('${product.id}')">
-                        <div class="relative h-48 bg-slate-800 overflow-hidden">
-                            ${hasImage ? 
-                                `<img src="${product.images[0]}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">` :
-                                `<div class="w-full h-full flex items-center justify-center"><i class="fas fa-image text-3xl text-slate-700"></i></div>`
-                            }
-                            <div class="absolute top-3 left-3">
-                                <span class="commission-badge ${product.platform} text-white px-2 py-1 rounded-md text-xs font-bold shadow-lg">
-                                    ${config.name}
-                                </span>
-                            </div>
-                            ${originalPrice ? `<div class="absolute top-3 right-3 bg-rose-500 text-white px-2 py-1 rounded-md text-xs font-bold">-${Math.round((1 - displayPrice/originalPrice)*100)}%</div>` : ''}
-                        </div>
-                        <div class="p-5">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="bg-slate-700 text-slate-300 px-2 py-0.5 rounded text-xs capitalize">${product.category}</span>
-                                <span class="text-xs text-slate-500">${product.commission}% comm.</span>
-                            </div>
-                            <h3 class="font-bold text-lg mb-2 truncate-2 leading-tight">${product.name}</h3>
-                            <div class="flex items-end gap-2 mb-3">
-                                <span class="text-xl font-bold text-orange-400">$${displayPrice.toFixed(2)}</span>
-                                ${originalPrice ? `<span class="text-sm text-slate-500 line-through">$${originalPrice.toFixed(2)}</span>` : ''}
-                            </div>
-                            <div class="flex items-center justify-between p-2.5 bg-slate-800/50 rounded-lg">
-                                <span class="text-xs text-slate-400">You earn</span>
-                                <span class="text-sm font-bold text-green-400">$${commissionAmount}</span>
-                            </div>
-                            <div class="flex gap-2 mt-3">
-                                ${product.tags.slice(0, 3).map(t => `<span class="text-xs bg-slate-800 text-slate-400 px-2 py-1 rounded">${t}</span>`).join('')}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function filterProducts(platform) {
-            currentFilter = platform;
-            document.querySelectorAll('.platform-tab').forEach(tab => {
-                const isActive = tab.dataset.platform === platform;
-                tab.classList.toggle('active', isActive);
-                if (isActive) {
-                    tab.classList.remove('text-slate-400');
-                    tab.style.color = 'white';
-                } else {
-                    tab.classList.add('text-slate-400');
-                    tab.style.color = '';
-                }
-            });
-            renderProducts();
-        }
-
-        function searchProducts() {
-            renderProducts();
-        }
-
-        function sortProducts() {
-            const sort = document.getElementById('sortProducts').value;
-            products.sort((a, b) => {
-                if (sort === 'newest') return new Date(b.createdAt) - new Date(a.createdAt);
-                if (sort === 'price-high') return (b.salePrice || b.price) - (a.salePrice || a.price);
-                if (sort === 'price-low') return (a.salePrice || a.price) - (b.salePrice || b.price);
-                if (sort === 'commission') return b.commission - a.commission;
-                return 0;
-            });
-            renderProducts();
-        }
-
-        // ==================== PRODUCT MODAL ====================
-        function openProductModal(id) {
-            const product = products.find(p => p.id === id);
-            if (!product) return;
-            const config = platformConfig[product.platform];
-            const displayPrice = product.salePrice || product.price;
-            const commissionAmount = (displayPrice * product.commission / 100).toFixed(2);
-
-            const content = document.getElementById('modalContent');
-            if (!content) return;
-            
-            content.innerHTML = `
-                <div class="grid md:grid-cols-2 gap-8">
-                    <div>
-                        <div class="rounded-xl overflow-hidden bg-slate-800 mb-4 aspect-square">
-                            ${product.images.length > 0 ? 
-                                `<img src="${product.images[0]}" class="w-full h-full object-cover">` :
-                                `<div class="w-full h-full flex items-center justify-center"><i class="fas fa-image text-5xl text-slate-700"></i></div>`
-                            }
-                        </div>
-                        ${product.images.length > 1 ? `
-                            <div class="grid grid-cols-4 gap-2">
-                                ${product.images.slice(1).map(img => `
-                                    <div class="aspect-square rounded-lg overflow-hidden bg-slate-800">
-                                        <img src="${img}" class="w-full h-full object-cover">
-                                    </div>
-                                `).join('')}
-                            </div>
-                        ` : ''}
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2 mb-3">
-                            <span class="commission-badge ${product.platform} text-white px-3 py-1 rounded-full text-sm font-bold">${config.name}</span>
-                            <span class="bg-slate-700 text-slate-300 px-3 py-1 rounded-full text-sm capitalize">${product.category}</span>
-                        </div>
-                        <h2 class="text-3xl font-bold mb-4">${product.name}</h2>
-                        <div class="flex items-end gap-3 mb-6">
-                            <span class="text-4xl font-bold text-orange-400">$${displayPrice.toFixed(2)}</span>
-                            ${product.salePrice ? `<span class="text-xl text-slate-500 line-through">$${product.price.toFixed(2)}</span>` : ''}
-                        </div>
-                        
-                        <div class="space-y-4 mb-6">
-                            <div class="p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
-                                <div class="flex justify-between items-center mb-2">
-                                    <span class="text-slate-400">Commission Rate</span>
-                                    <span class="font-bold text-lg">${product.commission}%</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-slate-400">Your Earnings</span>
-                                    <span class="font-bold text-xl text-green-400">$${commissionAmount}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <p class="text-slate-300 mb-6 leading-relaxed">${product.description || 'No description provided.'}</p>
-
-                        <div class="flex flex-wrap gap-2 mb-6">
-                            ${product.tags.map(t => `<span class="bg-slate-800 text-slate-300 px-3 py-1.5 rounded-lg text-sm">${t}</span>`).join('')}
-                        </div>
-
-                        <div class="flex gap-3">
-                            <a href="${product.affiliateLink}" target="_blank" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-bold text-center transition-all">
-                                <i class="fas fa-external-link-alt mr-2"></i>Visit Product
-                            </a>
-                            <button onclick="copyLink('${product.affiliateLink}')" class="px-4 py-3 rounded-xl border border-slate-700 hover:bg-slate-800 transition-all" title="Copy Link">
-                                <i class="fas fa-link"></i>
-                            </button>
-                            <button onclick="deleteProduct('${product.id}')" class="px-4 py-3 rounded-xl border border-rose-700/50 text-rose-400 hover:bg-rose-500/10 transition-all" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            document.getElementById('productModal').classList.remove('hidden');
-        }
-
-        function closeModal() {
-            document.getElementById('productModal').classList.add('hidden');
-        }
-
-        function copyLink(link) {
-            navigator.clipboard.writeText(link);
-            showToast('Link copied to clipboard!');
-        }
-
-        function deleteProduct(id) {
-            if (confirm('Are you sure you want to delete this product?')) {
-                products = products.filter(p => p.id !== id);
-                localStorage.setItem('affiliateProducts', JSON.stringify(products));
-                updateCounts();
-                renderProducts();
-                closeModal();
-                showToast('Product deleted');
-            }
-        }
-
-        // ==================== SOCIAL HUB ====================
-        function updateSocialSelector() {
-            const container = document.getElementById('socialProductSelector');
-            const noProducts = document.getElementById('noProductsSocial');
-            if (!container) return;
-            
-            if (products.length === 0) {
-                container.innerHTML = '';
-                if (noProducts) noProducts.classList.remove('hidden');
-                return;
-            }
-            
-            if (noProducts) noProducts.classList.add('hidden');
-            container.innerHTML = products.map(p => `
-                <div class="flex items-center gap-4 p-3 rounded-lg hover:bg-slate-800/50 cursor-pointer transition-colors" onclick="selectProductForSocial('${p.id}')">
-                    <div class="w-12 h-12 rounded-lg bg-slate-800 flex items-center justify-center overflow-hidden">
-                        ${p.images.length > 0 ? `<img src="${p.images[0]}" class="w-full h-full object-cover">` : '<i class="fas fa-image text-slate-600"></i>'}
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="font-medium text-sm truncate">${p.name}</p>
-                        <p class="text-xs text-slate-500">$${(p.salePrice || p.price).toFixed(2)} • ${p.commission}% commission</p>
-                    </div>
-                    <i class="fas fa-chevron-right text-slate-600"></i>
-                </div>
-            `).join('');
-        }
-
-        function selectProductForSocial(id) {
-            selectedProductForSocial = products.find(p => p.id === id);
-            if (!selectedProductForSocial) return;
-            
-            document.getElementById('shareSection').classList.remove('hidden');
-            
-            // Generate caption
-            const p = selectedProductForSocial;
-            const displayPrice = p.salePrice || p.price;
-            const savings = p.salePrice ? Math.round((1 - p.salePrice/p.price) * 100) : 0;
-            
-            const caption = `🔥 ${p.name}\n\n` +
-                `💰 $${displayPrice.toFixed(2)}${p.salePrice ? ` (was $${p.price.toFixed(2)})` : ''}\n` +
-                `${p.salePrice ? `📉 Save ${savings}%!\n` : ''}` +
-                `🔗 Link in bio!\n\n` +
-                `#deals #${p.category} #shopping`;
-            
-            document.getElementById('generatedCaption').value = caption;
-            document.getElementById('charCount').textContent = caption.length + ' chars';
-            
-            // Update preview
-            document.getElementById('fbPreviewText').textContent = caption.split('\n')[0];
-            document.getElementById('fbPreviewTitle').textContent = p.name;
-            document.getElementById('fbPreviewPrice').textContent = '$' + displayPrice.toFixed(2);
-            if (p.images.length > 0) {
-                document.getElementById('fbPreviewImage').innerHTML = `<img src="${p.images[0]}" class="w-full h-full object-cover">`;
-            }
-        }
-
-        function copyCaption() {
-            const caption = document.getElementById('generatedCaption').value;
-            navigator.clipboard.writeText(caption);
-            showToast('Caption copied!');
-        }
-
-        function shareTo(platform) {
-            if (!selectedProductForSocial) return;
-            const p = selectedProductForSocial;
-            const url = encodeURIComponent(p.affiliateLink);
-            const text = encodeURIComponent(p.name);
-            
-            const urls = {
-                facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}`,
-                twitter: `https://twitter.com/intent/tweet?text=${text}&url=${url}`,
-                pinterest: `https://pinterest.com/pin/create/button/?url=${url}&description=${text}`,
-                linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
-                whatsapp: `https://wa.me/?text=${text}%20${url}`,
-                telegram: `https://t.me/share/url?url=${url}&text=${text}`
-            };
-            
-            if (urls[platform]) {
-                window.open(urls[platform], '_blank', 'width=600,height=400');
-                showToast(`Shared to ${platform}!`);
-            }
-        }
-
-        // ==================== UTILITIES ====================
-        function updateCounts() {
-            const counts = { amazon: 0, alibaba: 0, aliexpress: 0, temu: 0 };
-            products.forEach(p => { if (counts[p.platform] !== undefined) counts[p.platform]++; });
-            
-            const ids = ['amazon-count', 'alibaba-count', 'aliexpress-count', 'temu-count', 'total-products'];
-            ids.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    if (id === 'total-products') el.textContent = products.length;
-                    else el.textContent = counts[id.replace('-count', '')] || 0;
-                }
-            });
-        }
-
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            const msgEl = document.getElementById('toastMessage');
-            if (!toast || !msgEl) return;
-            msgEl.textContent = msg;
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
-        }
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeModal();
-        });
-    </script>
-</body>
-</html>
+                                                <p class="text-slate-400">3-15% Commission • 15
